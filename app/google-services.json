@@ -1,0 +1,86 @@
+{
+  "project_info": {
+    "project_number": "807432336747",
+    "firebase_url": "https://taxi-tracker-48a83.firebaseio.com",
+    "project_id": "taxi-tracker-48a83",
+    "storage_bucket": "taxi-tracker-48a83.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807432336747:android:e0eef486802a30de",
+        "android_client_info": {
+          "package_name": "br.ufscar.dc.mds.taxitracker_user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "807432336747-edr7epn7si1ldq3bo70eguv9esu3o83p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.ufscar.dc.mds.taxitracker_user",
+            "certificate_hash": "CD886FA9347A963F97A478A15BD186A5CECB953B"
+          }
+        },
+        {
+          "client_id": "807432336747-7l4qr0urml43df50io608ts2l2gmqdj9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvpNxii_byMXi8_z_ASL0IjZ-jm3IeXMw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "807432336747-7l4qr0urml43df50io608ts2l2gmqdj9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807432336747:android:c8d5742999969912",
+        "android_client_info": {
+          "package_name": "br.ufscar.dc.mds.taxitracker_driver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "807432336747-7l4qr0urml43df50io608ts2l2gmqdj9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvpNxii_byMXi8_z_ASL0IjZ-jm3IeXMw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

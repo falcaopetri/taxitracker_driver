@@ -1,35 +1,94 @@
 package br.ufscar.dc.mds.taxitracker_driver;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import java.io.UnsupportedEncodingException;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GetTokenResult;
+
+import org.json.JSONObject;
 
 import br.ufscar.dc.mds.taxitracker_library.TaxiTrackerRestClientUsage;
 import br.ufscar.dc.mds.taxitracker_library.TaxiTrackerRestHandler;
 
 public class MainActivity extends AppCompatActivity implements TaxiTrackerRestHandler {
+    private static final String TAG = "MainActivity";
     TaxiTrackerRestClientUsage taxiTrackerRest;
-    private final static String AUTH_USER_TAG = "motorista";
+    private final static String AUTH_USER_TAG = "MOTORISTA";
+    private static final int RC_SIGN_IN = 0;
+    private FirebaseAuth auth;
+
+    private String idToken;
+    private ProgressBar mProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mProgress = (ProgressBar) findViewById(R.id.progressBar);
+
         taxiTrackerRest = new TaxiTrackerRestClientUsage(this);
+        auth = FirebaseAuth.getInstance();
+
+        if (auth.getCurrentUser() != null) {
+            //user already signed in
+            completeLogin();
+        } else {
+            startActivityForResult(AuthUI.getInstance()
+                    .createSignInIntentBuilder()
+                    .setProviders(
+                            AuthUI.GOOGLE_PROVIDER)
+                    .build(), RC_SIGN_IN);
+            Log.d("AUTH", "1234");
+        }
     }
 
-    public void login(View view) {
-        // método chamando como callback de um botão
+    private void completeLogin() {
+        Log.d("AUTH", auth.getCurrentUser().getEmail());
+        mProgress.setVisibility(View.VISIBLE);
+        auth.getCurrentUser().getToken(false).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+            public void onComplete(@NonNull Task<GetTokenResult> task) {
+                mProgress.setVisibility(View.INVISIBLE);
+                if (task.isSuccessful()) {
+                    idToken = task.getResult().getToken();
+                    Log.d("ID TOKEN", idToken);
+                    // Send token to your backend via HTTPS
+                    taxiTrackerRest.login(idToken, AUTH_USER_TAG);
+                    // ...
+                    Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+                    startActivity(intent);
+                    MainActivity.this.finish();
+                } else {
+                    // Handle error -> task.getException();
+                }
+            }
+        });
+    }
 
-        // generate the token @ http://stackoverflow.com/a/27904796
-        // TODO esse id_token é o retornado pela API do google Oauth 2.0 após a autenticação
-        // Dica: É uma string bem longa...
-        String id_token = "";
-        taxiTrackerRest.login(id_token, AUTH_USER_TAG);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("AUTH", "here");
+        if (requestCode == RC_SIGN_IN) {
+            mProgress.setVisibility(View.VISIBLE);
+            if (resultCode == RESULT_OK) {
+                //user logged in
+                completeLogin();
+            } else {
+                //user not authenticated
+                Log.d("AUTH", "NOT AUTHENTICATED");
+            }
+        }
     }
 
     @Override
@@ -39,15 +98,17 @@ public class MainActivity extends AppCompatActivity implements TaxiTrackerRestHa
 
     @Override
     public void on_login(String access_token) {
-        Toast.makeText(this, "logged with token " + access_token, Toast.LENGTH_LONG).show();
+        Log.d(TAG, "logged with token " + access_token);
         taxiTrackerRest.add_auth_token(access_token);
+    }
 
-        taxiTrackerRest.getPassageiros();
+    @Override
+    public void on_refresh_info(JSONObject response) {
 
-        try {
-            taxiTrackerRest.createRace(this, "origem", "destino");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+    }
+
+    @Override
+    public void on_race_created(JSONObject response) {
+
     }
 }
